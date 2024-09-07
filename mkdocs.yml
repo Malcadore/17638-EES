@@ -1,0 +1,7 @@
+site_name: 17638 Engineering Embedded Systems
+nav:
+  - Home: index.md
+  - Course Hardware: coursehardware.md
+  - State Machines: statemachines.md
+  - About: syllabus.md
+theme: readthedocs
