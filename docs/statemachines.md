@@ -30,19 +30,248 @@ Relevant Links
 ## Example for State Machine Implementations
 
 ## Implementing State Machines
-- if/else state machine
+- Conditional Statements
     - Code Snippet
-    - Compiled Properties
-        - assembly
+    ```C
+    switch (currentState) {
+    case STATE_IDLE:
+        if (event == EVENT_START) {
+            // Transition to next state
+            currentState = STATE_RUNNING;
+        }
+        break;
+    case STATE_RUNNING:
+        if (event == EVENT_STOP) {
+            // Transition to idle state
+            currentState = STATE_IDLE;
+        }
+        break;
+        // Add more states as needed
+    }
+
+    ```
+    - Discussion
     - Pros/Cons
-- switch/case state machine
+
+
+- Lookup Tables
     - Code Snippet
-    - Complied Properties
-        - assembly
+    - TODO: Modify example
+    ```C
+    #include <stdio.h>
+
+    // Define states
+    typedef enum {
+        STATE_RED,
+        STATE_GREEN,
+        STATE_YELLOW,
+        STATE_MAX
+    } State;
+
+    // Define events
+    typedef enum {
+        EVENT_TIMER_EXPIRED,
+        EVENT_MAX
+    } Event;
+
+    // Function prototypes for state actions
+    void redAction(void);
+    void greenAction(void);
+    void yellowAction(void);
+
+    // State transition structure
+    typedef struct {
+        State currentState;
+        Event event;
+        State nextState;
+        void (*action)(void);
+    } StateTransition;
+
+    // State transition table
+    StateTransition stateTable[] = {
+        {STATE_RED, EVENT_TIMER_EXPIRED, STATE_GREEN, greenAction},
+        {STATE_GREEN, EVENT_TIMER_EXPIRED, STATE_YELLOW, yellowAction},
+        {STATE_YELLOW, EVENT_TIMER_EXPIRED, STATE_RED, redAction}
+    };
+
+    // Current state
+    State currentState = STATE_RED;
+
+    // State action functions
+    void redAction(void) {
+        printf("Red Light\n");
+    }
+
+    void greenAction(void) {
+        printf("Green Light\n");
+    }
+
+    void yellowAction(void) {
+        printf("Yellow Light\n");
+    }
+
+    // Function to handle events
+    void handleEvent(Event event) {
+        for (int i = 0; i < sizeof(stateTable) / sizeof(StateTransition); i++) {
+            if (stateTable[i].currentState == currentState && stateTable[i].event == event) {
+                stateTable[i].action();
+                currentState = stateTable[i].nextState;
+                break;
+            }
+        }
+    }
+
+    int main() {
+        // Simulate timer events
+        for (int i = 0; i < 6; i++) {
+            handleEvent(EVENT_TIMER_EXPIRED);
+        }
+        return 0;
+    }
+
+    ```
+    - Explanation
+        State and Event Definitions: Enumerations are used to define the states and events.
+        State Transition Table: An array of StateTransition structures maps the current state and event to the next state and the action to be performed.
+        State Action Functions: Functions that define the actions for each state.
+        Event Handling: The handleEvent function iterates through the state transition table to find the matching state and event, performs the action, and updates the current state.
+        Main Function: Simulates timer events to demonstrate the state transitions.
+
+    - Discussion
     - Pros/Cons
-- function pointer state machine
+
+
+- State Pattern
+
     - Code Snippet
-    - Compiled Properties
-        - assembly
+    ```C
+    typedef struct State {
+        void (*enter)(void);
+        void (*execute)(void);
+        void (*exit)(void);
+    } State;
+
+    State idleState = {idleEnter, idleExecute, idleExit};
+    State runningState = {runningEnter, runningExecute, runningExit};
+
+    State* currentState = &idleState;
+
+    void changeState(State* newState) {
+        currentState->exit();
+        currentState = newState;
+        currentState->enter();
+    }
+
+    void update() {
+        currentState->execute();
+    }
+
+    #include <stdio.h>
+
+    // Forward declarations of state structures
+    typedef struct State State;
+
+    // Function pointers for state actions
+    typedef void (*StateAction)(void);
+
+    // State structure
+    struct State {
+        StateAction enter;
+        StateAction execute;
+        StateAction exit;
+    };
+
+    // Function prototypes for state actions
+    void idleEnter(void);
+    void idleExecute(void);
+    void idleExit(void);
+    void selectingEnter(void);
+    void selectingExecute(void);
+    void selectingExit(void);
+    void dispensingEnter(void);
+    void dispensingExecute(void);
+    void dispensingExit(void);
+
+    // State instances
+    State idleState = {idleEnter, idleExecute, idleExit};
+    State selectingState = {selectingEnter, selectingExecute, selectingExit};
+    State dispensingState = {dispensingEnter, dispensingExecute, dispensingExit};
+
+    // Current state pointer
+    State* currentState = &idleState;
+
+    // State action functions
+    void idleEnter(void) {
+        printf("Entering Idle State\n");
+    }
+
+    void idleExecute(void) {
+        printf("Idle State: Waiting for selection\n");
+        // Simulate event to transition to selecting state
+        currentState = &selectingState;
+        currentState->enter();
+    }
+
+    void idleExit(void) {
+        printf("Exiting Idle State\n");
+    }
+
+    void selectingEnter(void) {
+        printf("Entering Selecting State\n");
+    }
+
+    void selectingExecute(void) {
+        printf("Selecting State: Making a selection\n");
+        // Simulate event to transition to dispensing state
+        currentState = &dispensingState;
+        currentState->enter();
+    }
+
+    void selectingExit(void) {
+        printf("Exiting Selecting State\n");
+    }
+
+    void dispensingEnter(void) {
+        printf("Entering Dispensing State\n");
+    }
+
+    void dispensingExecute(void) {
+        printf("Dispensing State: Dispensing item\n");
+        // Simulate event to transition back to idle state
+        currentState = &idleState;
+        currentState->enter();
+    }
+
+    void dispensingExit(void) {
+        printf("Exiting Dispensing State\n");
+    }
+
+    // Function to update the state machine
+    void updateStateMachine(void) {
+        currentState->execute();
+    }
+
+    int main() {
+        // Initial state entry
+        currentState->enter();
+
+        // Simulate state machine updates
+        for (int i = 0; i < 3; i++) {
+            updateStateMachine();
+        }
+
+        return 0;
+    }
+        ```
+
+    - Explanation
+        State Structure: The State structure contains function pointers for the enter, execute, and exit actions.
+        State Instances: Instances of the State structure are created for each state (Idle, Selecting, Dispensing).
+        State Action Functions: Functions that define the actions for each state.
+        State Transitions: The execute function of each state simulates events that cause transitions to other states by updating the currentState pointer and calling the enter function of the new state.
+        State Machine Update: The updateStateMachine function calls the execute function of the current state.
+        Main Function: Initializes the state machine and simulates state machine updates.
+
+    - Discussion
 
 ## Discussion of Types
