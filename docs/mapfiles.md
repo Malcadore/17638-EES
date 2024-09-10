@@ -11,6 +11,26 @@ The output of the linking process is a Map file.  The notable elements in the ma
 
 Below you can see the variables from the main.c file (global_constant => .rodata) and (global_variable => .bss) their addresses and lengths.
 
+### Source Listing
+``` C
+#include<stdint.h>
+
+const uint32_t global_constant = 3;
+
+uint32_t global_variable = 0;
+
+int main(void)
+{
+    uint32_t result = 0;
+    global_variable = 10;
+    for(uint32_t i = 0; i<global_constant; i++)
+    {
+    	global_variable += global_variable;
+    }
+    result = global_variable;
+    return result;
+}
+```
 
 ## Map File Listing for Example Snippet
 ```
