@@ -55,6 +55,10 @@
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">Toolchain - map files</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#basic-functionality">Basic Functionality</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#source-listing">Source Listing</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#map-file-listing-for-example-snippet">Map File Listing for Example Snippet</a>
     </li>
@@ -95,6 +99,25 @@
 </code></pre>
 <p>The output of the linking process is a Map file.  The notable elements in the map file are starting addresses, lengths of variables and sections, and symbols exported for startup code.</p>
 <p>Below you can see the variables from the main.c file (global_constant =&gt; .rodata) and (global_variable =&gt; .bss) their addresses and lengths.</p>
+<h3 id="source-listing">Source Listing</h3>
+<pre><code class="language-C">#include&lt;stdint.h&gt;
+
+const uint32_t global_constant = 3;
+
+uint32_t global_variable = 0;
+
+int main(void)
+{
+    uint32_t result = 0;
+    global_variable = 10;
+    for(uint32_t i = 0; i&lt;global_constant; i++)
+    {
+        global_variable += global_variable;
+    }
+    result = global_variable;
+    return result;
+}
+</code></pre>
 <h2 id="map-file-listing-for-example-snippet">Map File Listing for Example Snippet</h2>
 <pre><code>
 Linker script and memory map
