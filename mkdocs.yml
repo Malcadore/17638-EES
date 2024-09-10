@@ -2,6 +2,7 @@ site_name: 17638 Engineering Embedded Systems
 nav:
   - Home: index.md
   - Course Hardware: coursehardware.md
-  - State Machines: statemachines.md
+  - Toolchain - objdump: objdump.md
+  - Toolchain - map files: mapfiles.md
   - About: syllabus.md
 theme: readthedocs
