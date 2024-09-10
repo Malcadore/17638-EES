@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>State Machines - 17638 Engineering Embedded Systems</title>
+    <title>Statemachines - 17638 Engineering Embedded Systems</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "State Machines";
+        var mkdocs_page_name = "Statemachines";
         var mkdocs_page_input_path = "statemachines.md";
         var mkdocs_page_url = null;
       </script>
@@ -47,10 +47,12 @@
                 <li class="toctree-l1"><a class="reference internal" href="../coursehardware/">Course Hardware</a>
                 </li>
               </ul>
-              <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="./">State Machines</a>
-    <ul class="current">
-    </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../objdump/">Toolchain - objdump</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../mapfiles/">Toolchain - map files</a>
                 </li>
               </ul>
               <ul>
@@ -71,7 +73,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">State Machines</li>
+      <li class="breadcrumb-item active">Statemachines</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -117,41 +119,290 @@
 <h2 id="example-for-state-machine-implementations">Example for State Machine Implementations</h2>
 <h2 id="implementing-state-machines">Implementing State Machines</h2>
 <ul>
-<li>if/else state machine<ul>
-<li>Code Snippet</li>
-<li>Compiled Properties<ul>
-<li>assembly</li>
+<li>
+<p>Conditional Statements</p>
+<ul>
+<li>Code Snippet
+```C
+switch (currentState) {
+case STATE_IDLE:
+    if (event == EVENT_START) {
+        // Transition to next state
+        currentState = STATE_RUNNING;
+    }
+    break;
+case STATE_RUNNING:
+    if (event == EVENT_STOP) {
+        // Transition to idle state
+        currentState = STATE_IDLE;
+    }
+    break;
+    // Add more states as needed
+}</li>
 </ul>
+<p>```
+- Discussion
+- Pros/Cons</p>
 </li>
+<li>
+<p>Lookup Tables</p>
+<ul>
+<li>Code Snippet</li>
+<li>TODO: Modify example
+```C</li>
+</ul>
+<h1 id="include">include <stdio.h></h1>
+<p>// Define states
+typedef enum {
+    STATE_RED,
+    STATE_GREEN,
+    STATE_YELLOW,
+    STATE_MAX
+} State;</p>
+<p>// Define events
+typedef enum {
+    EVENT_TIMER_EXPIRED,
+    EVENT_MAX
+} Event;</p>
+<p>// Function prototypes for state actions
+void redAction(void);
+void greenAction(void);
+void yellowAction(void);</p>
+<p>// State transition structure
+typedef struct {
+    State currentState;
+    Event event;
+    State nextState;
+    void (*action)(void);
+} StateTransition;</p>
+<p>// State transition table
+StateTransition stateTable[] = {
+    {STATE_RED, EVENT_TIMER_EXPIRED, STATE_GREEN, greenAction},
+    {STATE_GREEN, EVENT_TIMER_EXPIRED, STATE_YELLOW, yellowAction},
+    {STATE_YELLOW, EVENT_TIMER_EXPIRED, STATE_RED, redAction}
+};</p>
+<p>// Current state
+State currentState = STATE_RED;</p>
+<p>// State action functions
+void redAction(void) {
+    printf("Red Light\n");
+}</p>
+<p>void greenAction(void) {
+    printf("Green Light\n");
+}</p>
+<p>void yellowAction(void) {
+    printf("Yellow Light\n");
+}</p>
+<p>// Function to handle events
+void handleEvent(Event event) {
+    for (int i = 0; i &lt; sizeof(stateTable) / sizeof(StateTransition); i++) {
+        if (stateTable[i].currentState == currentState &amp;&amp; stateTable[i].event == event) {
+            stateTable[i].action();
+            currentState = stateTable[i].nextState;
+            break;
+        }
+    }
+}</p>
+<p>int main() {
+    // Simulate timer events
+    for (int i = 0; i &lt; 6; i++) {
+        handleEvent(EVENT_TIMER_EXPIRED);
+    }
+    return 0;
+}</p>
+<p>```
+- Explanation
+    State and Event Definitions: Enumerations are used to define the states and events.
+    State Transition Table: An array of StateTransition structures maps the current state and event to the next state and the action to be performed.
+    State Action Functions: Functions that define the actions for each state.
+    Event Handling: The handleEvent function iterates through the state transition table to find the matching state and event, performs the action, and updates the current state.
+    Main Function: Simulates timer events to demonstrate the state transitions.</p>
+<ul>
+<li>Discussion</li>
 <li>Pros/Cons</li>
 </ul>
 </li>
-<li>switch/case state machine<ul>
-<li>Code Snippet</li>
-<li>Complied Properties<ul>
-<li>assembly</li>
+<li>
+<p>State Pattern</p>
+<ul>
+<li>Code Snippet
+```C
+typedef struct State {
+    void (<em>enter)(void);
+    void (</em>execute)(void);
+    void (*exit)(void);
+} State;</li>
 </ul>
+<p>State idleState = {idleEnter, idleExecute, idleExit};
+State runningState = {runningEnter, runningExecute, runningExit};</p>
+<p>State* currentState = &idleState;</p>
+<p>void changeState(State* newState) {
+    currentState-&gt;exit();
+    currentState = newState;
+    currentState-&gt;enter();
+}</p>
+<p>void update() {
+    currentState-&gt;execute();
+}</p>
+<h1 id="include_1">include <stdio.h></h1>
+<p>// Forward declarations of state structures
+typedef struct State State;</p>
+<p>// Function pointers for state actions
+typedef void (*StateAction)(void);</p>
+<p>// State structure
+struct State {
+    StateAction enter;
+    StateAction execute;
+    StateAction exit;
+};</p>
+<p>// Function prototypes for state actions
+void idleEnter(void);
+void idleExecute(void);
+void idleExit(void);
+void selectingEnter(void);
+void selectingExecute(void);
+void selectingExit(void);
+void dispensingEnter(void);
+void dispensingExecute(void);
+void dispensingExit(void);</p>
+<p>// State instances
+State idleState = {idleEnter, idleExecute, idleExit};
+State selectingState = {selectingEnter, selectingExecute, selectingExit};
+State dispensingState = {dispensingEnter, dispensingExecute, dispensingExit};</p>
+<p>// Current state pointer
+State* currentState = &idleState;</p>
+<p>// State action functions
+void idleEnter(void) {
+    printf("Entering Idle State\n");
+}</p>
+<p>void idleExecute(void) {
+    printf("Idle State: Waiting for selection\n");
+    // Simulate event to transition to selecting state
+    currentState = &selectingState;
+    currentState-&gt;enter();
+}</p>
+<p>void idleExit(void) {
+    printf("Exiting Idle State\n");
+}</p>
+<p>void selectingEnter(void) {
+    printf("Entering Selecting State\n");
+}</p>
+<p>void selectingExecute(void) {
+    printf("Selecting State: Making a selection\n");
+    // Simulate event to transition to dispensing state
+    currentState = &dispensingState;
+    currentState-&gt;enter();
+}</p>
+<p>void selectingExit(void) {
+    printf("Exiting Selecting State\n");
+}</p>
+<p>void dispensingEnter(void) {
+    printf("Entering Dispensing State\n");
+}</p>
+<p>void dispensingExecute(void) {
+    printf("Dispensing State: Dispensing item\n");
+    // Simulate event to transition back to idle state
+    currentState = &idleState;
+    currentState-&gt;enter();
+}</p>
+<p>void dispensingExit(void) {
+    printf("Exiting Dispensing State\n");
+}</p>
+<p>// Function to update the state machine
+void updateStateMachine(void) {
+    currentState-&gt;execute();
+}</p>
+<p>int main() {
+    // Initial state entry
+    currentState-&gt;enter();</p>
+<pre><code>// Simulate state machine updates
+for (int i = 0; i &lt; 3; i++) {
+    updateStateMachine();
+}
+
+return 0;
+</code></pre>
+<p>}
+    ```</p>
+<ul>
+<li>
+<p>Explanation
+    State Structure: The State structure contains function pointers for the enter, execute, and exit actions.
+    State Instances: Instances of the State structure are created for each state (Idle, Selecting, Dispensing).
+    State Action Functions: Functions that define the actions for each state.
+    State Transitions: The execute function of each state simulates events that cause transitions to other states by updating the currentState pointer and calling the enter function of the new state.
+    State Machine Update: The updateStateMachine function calls the execute function of the current state.
+    Main Function: Initializes the state machine and simulates state machine updates.</p>
 </li>
-<li>Pros/Cons</li>
-</ul>
-</li>
-<li>function pointer state machine<ul>
-<li>Code Snippet</li>
-<li>Compiled Properties<ul>
-<li>assembly</li>
-</ul>
+<li>
+<p>Discussion</p>
 </li>
 </ul>
 </li>
 </ul>
 <h2 id="discussion-of-types">Discussion of Types</h2>
+<h2 id="more-on-state-machines">More on State Machines</h2>
+<p>https://www.youtube.com/watch?v=NTEHRjiAY2I</p>
+<h2 id="lecture-outline-state-machines">Lecture Outline: State Machines</h2>
+<ol>
+<li>
+<p>Introduction (5 minutes)
+Definition: What is a state machine?
+Importance: Why are state machines crucial in software engineering?
+Applications: Real-world examples (e.g., vending machines, traffic lights, software protocols).</p>
+</li>
+<li>
+<p>Types of State Machines (5 minutes)
+Finite State Machines (FSM)
+Definition and characteristics
+Examples
+Deterministic vs. Non-Deterministic FSM
+Differences and use cases
+Mealy vs. Moore Machines
+Definitions and key differences
+Examples</p>
+</li>
+<li>
+<p>Components of a State Machine (5 minutes)
+States: Definition and examples
+Transitions: How states change
+Events/Inputs: Triggers for transitions
+Actions/Outputs: Responses to transitions</p>
+</li>
+<li>
+<p>Designing State Machines (10 minutes)
+State Diagrams: Visual representation
+Symbols and notation
+Example diagram
+State Tables: Tabular representation
+Structure and usage
+Example table
+Best Practices: Tips for designing effective state machines
+Simplifying complex systems
+Avoiding common pitfalls</p>
+</li>
+<li>
+<p>Case Study (5 minutes)
+Example Project: Walkthrough of a state machine in a software project
+Problem statement
+State diagram and table
+Implementation overview</p>
+</li>
+<li>
+<p>Q&amp;A and Discussion (5 minutes)
+Open floor for questions
+Discussion on advanced topics or specific student interests</p>
+</li>
+<li>
+<p>Additional Tips:
+Interactive Elements: Include quick polls or questions to engage students.
+Visual Aids: Use diagrams and tables to illustrate concepts clearly.
+Real-World Examples: Relate theoretical concepts to practical applications.</p>
+</li>
+</ol>
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../coursehardware/" class="btn btn-neutral float-left" title="Course Hardware"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../syllabus/" class="btn btn-neutral float-right" title="About">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -173,10 +424,6 @@
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../coursehardware/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../syllabus/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
