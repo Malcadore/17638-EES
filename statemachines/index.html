@@ -58,23 +58,13 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">State Machines</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#types-of-state-machines">Types of State Machines</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#background">Background</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#design-guidance">Design Guidance</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#elements-in-a-state-machine">Elements in a State Machine</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#modeling-state-machines">Modeling State Machines</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#example-for-state-machine-implementations">Example for State Machine Implementations</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#implementing-state-machines">Implementing State Machines</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#conditional-statements">Conditional Statements</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#lookup-tables">Lookup Tables</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#state-pattern">State Pattern</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#more-on-state-machines">More on State Machines</a>
     </li>
     </ul>
                 </li>
@@ -106,48 +96,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="design-element-state-machines">Design Element: State Machines</h1>
-<p>Relevant Links
-- required literature reading</p>
-<h2 id="types-of-state-machines">Types of State Machines</h2>
-<ul>
-<li>HSM - Heirarchichal State Machines</li>
-<li>FSM - Finite State Machine</li>
-</ul>
-<h2 id="background">Background</h2>
-<ul>
-<li>What are state machines</li>
-<li>Linking state machines to the behavior of contolled objects</li>
-<li>Linking state machines to events and time</li>
-<li>Processes, Transitions, and Constraints</li>
-</ul>
-<h2 id="design-guidance">Design Guidance</h2>
-<ul>
-<li>Changes in enviornment state</li>
-<li>Needed behavioral changes in the application<ul>
-<li>Example: </li>
-</ul>
-</li>
-</ul>
-<h2 id="elements-in-a-state-machine">Elements in a State Machine</h2>
-<ul>
-<li>Activities</li>
-<li>State Transitions</li>
-</ul>
-<h2 id="modeling-state-machines">Modeling State Machines</h2>
-<ul>
-<li>Modeling techniques for State Machines</li>
-<li>State Diagrams, State Charts</li>
-<li>UML</li>
-<li>SysML</li>
-</ul>
-<h2 id="example-for-state-machine-implementations">Example for State Machine Implementations</h2>
-<h2 id="implementing-state-machines">Implementing State Machines</h2>
+                <h1 id="implementing-state-machines">Implementing State Machines</h1>
+<p>These are a few common implementation styles for state machines and have their own pros and cons.  </p>
 <h2 id="conditional-statements">Conditional Statements</h2>
-<pre><code>- Code Snippet
-
-```C
-    // Define states
+<p>The code snippet below is a 'typical' example of a switch/case state machine written in C.  The main features are the switch/case with the case conditions representing the current state of the system, the events which are selected within the case block, and the processing that happens within the case block.  These are simple and get small jobs done.  They're suitable for using within RTOS tasks where the task itself must react to events and has a state all its own.  Note that the state within an RTOS task will have the states that are hidden under the implementation (i.e., suspended, running, idle...).</p>
+<pre><code class="language-C">// Define states
 typedef enum {
     STATE_IDLE,
     STATE_RUNNING,
@@ -175,21 +128,25 @@ case STATE_RUNNING:
     break;
     // Add more states as needed
 }
-
-```
-
-- Discussion
-Conditional state machines are the simplest to implement and maintain.  There are no fancy tricks with referncing or structs that need to be coded.  The switch/case block is typically located in a processing loop and executed frequently.  Placing code that queries external conditions can be a matter of taste, being either inside the control loop, the switch case block, or elsewhere, but the point to note is that collecting variables or querying an RT Image is going to be a design concern.  For relatively small state machines, the switch is very maintainable, but when lots of states or transition events have to be designed, then it becomes problematic to update.  This is due to being constrained to one block of code or relocating case code into functions.  Care has to be taken refactoring switch case statements to avoid maintenaince problems.
-
-- Pros
-    - Simple, with no pointers, easy to maintain when small
-
-- Cons
-    - Quickly becomes a maintenaince problem with lots of states
 </code></pre>
+<p>Explanation:</p>
+<p>Conditional state machines are the simplest to implement and maintain.  There are no fancy tricks with referncing or structs that need to be coded.  The switch/case block is typically located in a processing loop and executed frequently.  Placing code that queries external conditions can be a matter of taste, being either inside the control loop, the switch case block, or elsewhere, but the point to note is that collecting variables or querying an RT Image is going to be a design concern.  For relatively small state machines, the switch is very maintainable, but when lots of states or transition events have to be designed, then it becomes problematic to update.  This is due to being constrained to one block of code or relocating case code into functions.  Care has to be taken refactoring switch case statements to avoid maintenaince problems.</p>
+<ul>
+<li>
+<p>Pros</p>
+<ul>
+<li>Simple, with no pointers, easy to maintain when small</li>
+</ul>
+</li>
+<li>
+<p>Cons</p>
+<ul>
+<li>Quickly becomes a maintenaince problem with lots of states </li>
+</ul>
+</li>
+</ul>
 <h2 id="lookup-tables">Lookup Tables</h2>
-<pre><code>```C
-#include &lt;stdio.h&gt;
+<pre><code class="language-C">#include &lt;stdio.h&gt;
 
 // Define states
 typedef enum {
@@ -230,15 +187,15 @@ State currentState = STATE_RED;
 
 // State action functions
 void redAction(void) {
-    printf("Red Light\n");
+    printf(&quot;Red Light\n&quot;);
 }
 
 void greenAction(void) {
-    printf("Green Light\n");
+    printf(&quot;Green Light\n&quot;);
 }
 
 void yellowAction(void) {
-    printf("Yellow Light\n");
+    printf(&quot;Yellow Light\n&quot;);
 }
 
 // Function to handle events
@@ -259,40 +216,49 @@ int main() {
     }
     return 0;
 }
-
-```
-- Explanation
-    State and Event Definitions: Enumerations are used to define the states and events.
-    State Transition Table: An array of StateTransition structures maps the current state and event to the next state and the action to be performed.
-    State Action Functions: Functions that define the actions for each state.
-    Event Handling: The handleEvent function iterates through the state transition table to find the matching state and event, performs the action, and updates the current state.
-    Main Function: Simulates timer events to demonstrate the state transitions.
-
-- Pros
-    - State transition table is easily defined
-    - Functions are mapped to actions that take place on transitions
-
-- Cons
-    - Event Handling loop must iterate over the entire state space
-    - Handling non-deterministic FSM's in a generic way complicates the example.  
-    - Handling more than one event or more than one possible transition makes it also more complicated.
 </code></pre>
 <ul>
 <li>
-<p>State Pattern</p>
-<p>```C</p>
-<h1 id="include">include <stdio.h></h1>
-<p>// Forward declarations of state structures
-typedef struct State State;</p>
-<p>// Function pointers for state actions
-typedef void (*StateAction)(void);</p>
-<p>// State structure
+<p>Explanation</p>
+<p>State and Event Definitions: Enumerations are used to define the states and events.
+State Transition Table: An array of StateTransition structures maps the current state and event to the next state and the action to be performed.
+State Action Functions: Functions that define the actions for each state.
+Event Handling: The handleEvent function iterates through the state transition table to find the matching state and event, performs the action, and updates the current state.
+Main Function: Simulates timer events to demonstrate the state transitions.</p>
+</li>
+<li>
+<p>Pros</p>
+<ul>
+<li>State transition table is easily defined</li>
+<li>Functions are mapped to actions that take place on transitions</li>
+</ul>
+</li>
+<li>
+<p>Cons</p>
+<ul>
+<li>Event Handling loop must iterate over the entire state space</li>
+<li>Handling non-deterministic FSM's in a generic way complicates the example.  </li>
+<li>Handling more than one event or more than one possible transition makes it also more complicated.</li>
+</ul>
+</li>
+</ul>
+<h2 id="state-pattern">State Pattern</h2>
+<pre><code class="language-C">#include &lt;stdio.h&gt;
+
+// Forward declarations of state structures
+typedef struct State State;
+
+// Function pointers for state actions
+typedef void (*StateAction)(void);
+
+// State structure
 struct State {
     StateAction enter;
     StateAction execute;
     StateAction exit;
-};</p>
-<p>// Function prototypes for state actions
+};
+
+// Function prototypes for state actions
 void idleEnter(void);
 void idleExecute(void);
 void idleExit(void);
@@ -301,75 +267,88 @@ void selectingExecute(void);
 void selectingExit(void);
 void dispensingEnter(void);
 void dispensingExecute(void);
-void dispensingExit(void);</p>
-<p>// State instances
+void dispensingExit(void);
+
+// State instances
 State idleState = {idleEnter, idleExecute, idleExit};
 State selectingState = {selectingEnter, selectingExecute, selectingExit};
-State dispensingState = {dispensingEnter, dispensingExecute, dispensingExit};</p>
-<p>// Current state pointer
-State* currentState = &idleState;</p>
-<p>// State action functions
+State dispensingState = {dispensingEnter, dispensingExecute, dispensingExit};
+
+// Current state pointer
+State* currentState = &amp;idleState;
+
+// State action functions
 void idleEnter(void) {
-    printf("Entering Idle State\n");
-}</p>
-<p>void idleExecute(void) {
-    printf("Idle State: Waiting for selection\n");
-    // Simulate event to transition to selecting state
-    currentState = &selectingState;
-    currentState-&gt;enter();
-}</p>
-<p>void idleExit(void) {
-    printf("Exiting Idle State\n");
-}</p>
-<p>void selectingEnter(void) {
-    printf("Entering Selecting State\n");
-}</p>
-<p>void selectingExecute(void) {
-    printf("Selecting State: Making a selection\n");
-    // Simulate event to transition to dispensing state
-    currentState = &dispensingState;
-    currentState-&gt;enter();
-}</p>
-<p>void selectingExit(void) {
-    printf("Exiting Selecting State\n");
-}</p>
-<p>void dispensingEnter(void) {
-    printf("Entering Dispensing State\n");
-}</p>
-<p>void dispensingExecute(void) {
-    printf("Dispensing State: Dispensing item\n");
-    // Simulate event to transition back to idle state
-    currentState = &idleState;
-    currentState-&gt;enter();
-}</p>
-<p>void dispensingExit(void) {
-    printf("Exiting Dispensing State\n");
-}</p>
-<p>// Function to update the state machine
-void updateStateMachine(void) {
-    currentState-&gt;execute();
-}</p>
-<p>int main() {
-    // Initial state entry
-    currentState-&gt;enter();</p>
-<pre><code>// Simulate state machine updates
-for (int i = 0; i &lt; 3; i++) {
-    updateStateMachine();
+    printf(&quot;Entering Idle State\n&quot;);
 }
 
-return 0;
+void idleExecute(void) {
+    printf(&quot;Idle State: Waiting for selection\n&quot;);
+    // Simulate event to transition to selecting state
+    currentState = &amp;selectingState;
+    currentState-&gt;enter();
+}
+
+void idleExit(void) {
+    printf(&quot;Exiting Idle State\n&quot;);
+}
+
+void selectingEnter(void) {
+    printf(&quot;Entering Selecting State\n&quot;);
+}
+
+void selectingExecute(void) {
+    printf(&quot;Selecting State: Making a selection\n&quot;);
+    // Simulate event to transition to dispensing state
+    currentState = &amp;dispensingState;
+    currentState-&gt;enter();
+}
+
+void selectingExit(void) {
+    printf(&quot;Exiting Selecting State\n&quot;);
+}
+
+void dispensingEnter(void) {
+    printf(&quot;Entering Dispensing State\n&quot;);
+}
+
+void dispensingExecute(void) {
+    printf(&quot;Dispensing State: Dispensing item\n&quot;);
+    // Simulate event to transition back to idle state
+    currentState = &amp;idleState;
+    currentState-&gt;enter();
+}
+
+void dispensingExit(void) {
+    printf(&quot;Exiting Dispensing State\n&quot;);
+}
+
+// Function to update the state machine
+void updateStateMachine(void) {
+    currentState-&gt;execute();
+}
+
+int main() {
+    // Initial state entry
+    currentState-&gt;enter();
+
+    // Simulate state machine updates
+    for (int i = 0; i &lt; 3; i++) {
+        updateStateMachine();
+    }
+
+    return 0;
+}
 </code></pre>
-<p>}
-    ```</p>
 <ul>
 <li>
-<p>Explanation
-    State Structure: The State structure contains function pointers for the enter, execute, and exit actions.
-    State Instances: Instances of the State structure are created for each state (Idle, Selecting, Dispensing).
-    State Action Functions: Functions that define the actions for each state.
-    State Transitions: The execute function of each state simulates events that cause transitions to other states by updating the currentState pointer and calling the enter function of the new state.
-    State Machine Update: The updateStateMachine function calls the execute function of the current state.
-    Main Function: Initializes the state machine and simulates state machine updates.</p>
+<p>Explanation</p>
+<p>State Structure: The State structure contains function pointers for the enter, execute, and exit actions.
+State Instances: Instances of the State structure are created for each state (Idle, Selecting, Dispensing).
+State Action Functions: Functions that define the actions for each state.
+State Transitions: The execute function of each state simulates events that cause transitions to other states by updating the currentState pointer and calling the enter function of the new state.
+State Machine Update: The updateStateMachine function calls the execute function of the current state.
+Main Function: Initializes the state machine and simulates state machine updates.</p>
 </li>
 <li>
 <p>Pros</p>
@@ -386,9 +365,6 @@ return 0;
 </ul>
 </li>
 </ul>
-</li>
-</ul>
-<h2 id="discussion-of-types">Discussion of Types</h2>
 <h2 id="more-on-state-machines">More on State Machines</h2>
 <p>https://www.youtube.com/watch?v=NTEHRjiAY2I</p>
               
