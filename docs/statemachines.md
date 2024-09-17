@@ -29,15 +29,13 @@ Relevant Links
 - UML
 - SysML
 
-## Example for State Machine Implementations
 
 ## Implementing State Machines
 
 ##  Conditional Statements
-    - Code Snippet
-
+ 
     ```C
-        // Define states
+    // Define states
     typedef enum {
         STATE_IDLE,
         STATE_RUNNING,
@@ -65,16 +63,15 @@ Relevant Links
         break;
         // Add more states as needed
     }
-
     ```
 
-    - Discussion
+    Discussion
     Conditional state machines are the simplest to implement and maintain.  There are no fancy tricks with referncing or structs that need to be coded.  The switch/case block is typically located in a processing loop and executed frequently.  Placing code that queries external conditions can be a matter of taste, being either inside the control loop, the switch case block, or elsewhere, but the point to note is that collecting variables or querying an RT Image is going to be a design concern.  For relatively small state machines, the switch is very maintainable, but when lots of states or transition events have to be designed, then it becomes problematic to update.  This is due to being constrained to one block of code or relocating case code into functions.  Care has to be taken refactoring switch case statements to avoid maintenaince problems.
 
-    - Pros
+    * Pros
         - Simple, with no pointers, easy to maintain when small
 
-    - Cons
+    * Cons
         - Quickly becomes a maintenaince problem with lots of states 
 
 
