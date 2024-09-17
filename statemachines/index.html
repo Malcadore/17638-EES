@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Statemachines - 17638 Engineering Embedded Systems</title>
+    <title>State Machines - 17638 Engineering Embedded Systems</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Statemachines";
+        var mkdocs_page_name = "State Machines";
         var mkdocs_page_input_path = "statemachines.md";
         var mkdocs_page_url = null;
       </script>
@@ -55,6 +55,30 @@
                 <li class="toctree-l1"><a class="reference internal" href="../mapfiles/">Toolchain - map files</a>
                 </li>
               </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">State Machines</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#types-of-state-machines">Types of State Machines</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#background">Background</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#design-guidance">Design Guidance</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#elements-in-a-state-machine">Elements in a State Machine</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#modeling-state-machines">Modeling State Machines</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#example-for-state-machine-implementations">Example for State Machine Implementations</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#implementing-state-machines">Implementing State Machines</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#conditional-statements">Conditional Statements</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lookup-tables">Lookup Tables</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
               <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../syllabus/">About</a>
                 </li>
@@ -73,7 +97,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Statemachines</li>
+      <li class="breadcrumb-item active">State Machines</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -82,7 +106,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <p>Relevant Links
+                <h1 id="design-element-state-machines">Design Element: State Machines</h1>
+<p>Relevant Links
 - required literature reading</p>
 <h2 id="types-of-state-machines">Types of State Machines</h2>
 <ul>
@@ -118,12 +143,23 @@
 </ul>
 <h2 id="example-for-state-machine-implementations">Example for State Machine Implementations</h2>
 <h2 id="implementing-state-machines">Implementing State Machines</h2>
-<ul>
-<li>
-<p>Conditional Statements</p>
-<ul>
-<li>Code Snippet
+<h2 id="conditional-statements">Conditional Statements</h2>
+<pre><code>- Code Snippet
+
 ```C
+    // Define states
+typedef enum {
+    STATE_IDLE,
+    STATE_RUNNING,
+} State;
+
+typedef enum {
+    EVENT_START,
+    EVENT_STOP
+} Event
+
+event = getEvent();
+
 switch (currentState) {
 case STATE_IDLE:
     if (event == EVENT_START) {
@@ -138,62 +174,74 @@ case STATE_RUNNING:
     }
     break;
     // Add more states as needed
-}</li>
-</ul>
-<p>```
+}
+
+```
+
 - Discussion
-- Pros/Cons</p>
-</li>
-<li>
-<p>Lookup Tables</p>
-<ul>
-<li>Code Snippet</li>
-<li>TODO: Modify example
-```C</li>
-</ul>
-<h1 id="include">include <stdio.h></h1>
-<p>// Define states
+Conditional state machines are the simplest to implement and maintain.  There are no fancy tricks with referncing or structs that need to be coded.  The switch/case block is typically located in a processing loop and executed frequently.  Placing code that queries external conditions can be a matter of taste, being either inside the control loop, the switch case block, or elsewhere, but the point to note is that collecting variables or querying an RT Image is going to be a design concern.  For relatively small state machines, the switch is very maintainable, but when lots of states or transition events have to be designed, then it becomes problematic to update.  This is due to being constrained to one block of code or relocating case code into functions.  Care has to be taken refactoring switch case statements to avoid maintenaince problems.
+
+- Pros
+    - Simple, with no pointers, easy to maintain when small
+
+- Cons
+    - Quickly becomes a maintenaince problem with lots of states
+</code></pre>
+<h2 id="lookup-tables">Lookup Tables</h2>
+<pre><code>```C
+#include &lt;stdio.h&gt;
+
+// Define states
 typedef enum {
     STATE_RED,
     STATE_GREEN,
     STATE_YELLOW,
     STATE_MAX
-} State;</p>
-<p>// Define events
+} State;
+
+// Define events
 typedef enum {
     EVENT_TIMER_EXPIRED,
     EVENT_MAX
-} Event;</p>
-<p>// Function prototypes for state actions
+} Event;
+
+// Function prototypes for state actions
 void redAction(void);
 void greenAction(void);
-void yellowAction(void);</p>
-<p>// State transition structure
+void yellowAction(void);
+
+// State transition structure
 typedef struct {
     State currentState;
     Event event;
     State nextState;
     void (*action)(void);
-} StateTransition;</p>
-<p>// State transition table
+} StateTransition;
+
+// State transition table
 StateTransition stateTable[] = {
     {STATE_RED, EVENT_TIMER_EXPIRED, STATE_GREEN, greenAction},
     {STATE_GREEN, EVENT_TIMER_EXPIRED, STATE_YELLOW, yellowAction},
     {STATE_YELLOW, EVENT_TIMER_EXPIRED, STATE_RED, redAction}
-};</p>
-<p>// Current state
-State currentState = STATE_RED;</p>
-<p>// State action functions
+};
+
+// Current state
+State currentState = STATE_RED;
+
+// State action functions
 void redAction(void) {
     printf("Red Light\n");
-}</p>
-<p>void greenAction(void) {
+}
+
+void greenAction(void) {
     printf("Green Light\n");
-}</p>
-<p>void yellowAction(void) {
+}
+
+void yellowAction(void) {
     printf("Yellow Light\n");
-}</p>
-<p>// Function to handle events
+}
+
+// Function to handle events
 void handleEvent(Event event) {
     for (int i = 0; i &lt; sizeof(stateTable) / sizeof(StateTransition); i++) {
         if (stateTable[i].currentState == currentState &amp;&amp; stateTable[i].event == event) {
@@ -202,49 +250,38 @@ void handleEvent(Event event) {
             break;
         }
     }
-}</p>
-<p>int main() {
+}
+
+int main() {
     // Simulate timer events
     for (int i = 0; i &lt; 6; i++) {
         handleEvent(EVENT_TIMER_EXPIRED);
     }
     return 0;
-}</p>
-<p>```
+}
+
+```
 - Explanation
     State and Event Definitions: Enumerations are used to define the states and events.
     State Transition Table: An array of StateTransition structures maps the current state and event to the next state and the action to be performed.
     State Action Functions: Functions that define the actions for each state.
     Event Handling: The handleEvent function iterates through the state transition table to find the matching state and event, performs the action, and updates the current state.
-    Main Function: Simulates timer events to demonstrate the state transitions.</p>
+    Main Function: Simulates timer events to demonstrate the state transitions.
+
+- Pros
+    - State transition table is easily defined
+    - Functions are mapped to actions that take place on transitions
+
+- Cons
+    - Event Handling loop must iterate over the entire state space
+    - Handling non-deterministic FSM's in a generic way complicates the example.  
+    - Handling more than one event or more than one possible transition makes it also more complicated.
+</code></pre>
 <ul>
-<li>Discussion</li>
-<li>Pros/Cons</li>
-</ul>
-</li>
 <li>
 <p>State Pattern</p>
-<ul>
-<li>Code Snippet
-```C
-typedef struct State {
-    void (<em>enter)(void);
-    void (</em>execute)(void);
-    void (*exit)(void);
-} State;</li>
-</ul>
-<p>State idleState = {idleEnter, idleExecute, idleExit};
-State runningState = {runningEnter, runningExecute, runningExit};</p>
-<p>State* currentState = &idleState;</p>
-<p>void changeState(State* newState) {
-    currentState-&gt;exit();
-    currentState = newState;
-    currentState-&gt;enter();
-}</p>
-<p>void update() {
-    currentState-&gt;execute();
-}</p>
-<h1 id="include_1">include <stdio.h></h1>
+<p>```C</p>
+<h1 id="include">include <stdio.h></h1>
 <p>// Forward declarations of state structures
 typedef struct State State;</p>
 <p>// Function pointers for state actions
@@ -335,7 +372,18 @@ return 0;
     Main Function: Initializes the state machine and simulates state machine updates.</p>
 </li>
 <li>
-<p>Discussion</p>
+<p>Pros</p>
+<ul>
+<li>Easier to manage state actions</li>
+<li>More modular than conditional state machine implementations</li>
+<li>Transitions defined inside states gets around lookup table limitations</li>
+</ul>
+</li>
+<li>
+<p>Cons</p>
+<ul>
+<li>Use of pointers can be prohibited by safety standards</li>
+</ul>
 </li>
 </ul>
 </li>
@@ -343,66 +391,13 @@ return 0;
 <h2 id="discussion-of-types">Discussion of Types</h2>
 <h2 id="more-on-state-machines">More on State Machines</h2>
 <p>https://www.youtube.com/watch?v=NTEHRjiAY2I</p>
-<h2 id="lecture-outline-state-machines">Lecture Outline: State Machines</h2>
-<ol>
-<li>
-<p>Introduction (5 minutes)
-Definition: What is a state machine?
-Importance: Why are state machines crucial in software engineering?
-Applications: Real-world examples (e.g., vending machines, traffic lights, software protocols).</p>
-</li>
-<li>
-<p>Types of State Machines (5 minutes)
-Finite State Machines (FSM)
-Definition and characteristics
-Examples
-Deterministic vs. Non-Deterministic FSM
-Differences and use cases
-Mealy vs. Moore Machines
-Definitions and key differences
-Examples</p>
-</li>
-<li>
-<p>Components of a State Machine (5 minutes)
-States: Definition and examples
-Transitions: How states change
-Events/Inputs: Triggers for transitions
-Actions/Outputs: Responses to transitions</p>
-</li>
-<li>
-<p>Designing State Machines (10 minutes)
-State Diagrams: Visual representation
-Symbols and notation
-Example diagram
-State Tables: Tabular representation
-Structure and usage
-Example table
-Best Practices: Tips for designing effective state machines
-Simplifying complex systems
-Avoiding common pitfalls</p>
-</li>
-<li>
-<p>Case Study (5 minutes)
-Example Project: Walkthrough of a state machine in a software project
-Problem statement
-State diagram and table
-Implementation overview</p>
-</li>
-<li>
-<p>Q&amp;A and Discussion (5 minutes)
-Open floor for questions
-Discussion on advanced topics or specific student interests</p>
-</li>
-<li>
-<p>Additional Tips:
-Interactive Elements: Include quick polls or questions to engage students.
-Visual Aids: Use diagrams and tables to illustrate concepts clearly.
-Real-World Examples: Relate theoretical concepts to practical applications.</p>
-</li>
-</ol>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../mapfiles/" class="btn btn-neutral float-left" title="Toolchain - map files"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../syllabus/" class="btn btn-neutral float-right" title="About">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -424,6 +419,10 @@ Real-World Examples: Relate theoretical concepts to practical applications.</p>
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
+      <span><a href="../mapfiles/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../syllabus/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

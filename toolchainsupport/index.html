@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>About - 17638 Engineering Embedded Systems</title>
+    <title>Toolchain Support - 17638 Engineering Embedded Systems</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "About";
-        var mkdocs_page_input_path = "syllabus.md";
+        var mkdocs_page_name = "Toolchain Support";
+        var mkdocs_page_input_path = "toolchainsupport.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -59,10 +59,8 @@
                 <li class="toctree-l1"><a class="reference internal" href="../statemachines/">State Machines</a>
                 </li>
               </ul>
-              <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="./">About</a>
-    <ul class="current">
-    </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../syllabus/">About</a>
                 </li>
               </ul>
       </div>
@@ -79,7 +77,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">About</li>
+      <li class="breadcrumb-item active">Toolchain Support</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -88,21 +86,27 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="course-description">Course Description</h2>
-<p>This course will introduce students to the design and implementation of sensor-based systems within an embedded systems context.  The course's major components are design documentation and C based implementation based on that design.  Throughout the course we will be discussing different design notions and study the workings of sensors, embedded systems, and wireless sensor nodes. </p>
-<h2 id="prior-knowledge">Prior Knowledge</h2>
-<p>Students taking this course should have some prior experience with IoT or embedded devices, but it isn’t a hard prerequisite.  Having hobbyist or classroom experience working with Arduino or Raspberry PI is beneficial but a prerequisite.  The course has significant programming components, requiring writing C code compiled on the gcc compiler.  The class will require proficiency with C/C++ to succeed.  No prior knowledge of sensors or wireless systems is necessary.</p>
-<h2 id="learning-objectives">Learning Objectives</h2>
-<p>After completing this course, you will be able to:
-•   Design system pieces using standard graphical notation in documentation as well as documenting code
-•   Build (code) parts of sensor based embedded systems from previously designed elements
-•   Evaluate the effectiveness of software designs in guiding software implementations</p>
+                <h1 id="toolchain-support">Toolchain Support</h1>
+<p>Generally, the course supports the use of tools on Windows and Ubuntu 22.04.  It's highly recommended that you have access to linux for a portion of the course as it is the supported operating system.  Use of Apple and Windows has been done by students in the past, but the responsibility of managing tools ultimately is the job of the engineer.</p>
+<h2 id="bare-metal-toolchain">Bare Metal Toolchain</h2>
+<p>GNU ARM gcc toolchain: https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloadsLinks to an external site.</p>
+<h2 id="openocd-open-onboard-chip-debugger">OpenOCD: Open Onboard Chip Debugger</h2>
+<p>Openocd is used to communicate between the gdb debugger the on-board debug circuitry to perform actions like retrieving registers or writing firmware images.</p>
+<p>https://openocd.org/Links to an external site.</p>
+<h2 id="stlink-v2-driver-windows">STLink V2 Driver: Windows</h2>
+<p>https://www.st.com/en/development-tools/stsw-link009.htmlLinks to an external site. </p>
+<h2 id="stm32-cubeide">STM32 CubeIDE</h2>
+<p>https://www.st.com/en/development-tools/stm32cubeide.htmlLinks to an external site. </p>
+<h2 id="other-useful-tooling">Other Useful Tooling</h2>
+<p>VMWare Workstation Pro (No longer licensed throuth CMU, but it is free.) https://blogs.vmware.com/workstation/2024/05/vmware-workstation-pro-now-available-free-for-personal-use.htmlLinks to an external site.  You'll need to set up an account with Broadcom to get a license.  </p>
+<p>Ubuntu 22.04  https://releases.ubuntu.com/jammy/Links to an external site. </p>
+<h2 id="todo">TODO:</h2>
+<h3 id="windows-machine-setup">Windows Machine Setup</h3>
+<h3 id="apple-machine-setup">Apple Machine Setup</h3>
+<h3 id="ubuntu-machine-setup">Ubuntu Machine Setup</h3>
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../statemachines/" class="btn btn-neutral float-left" title="State Machines"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-    </div>
 
   <hr/>
 
@@ -123,8 +127,6 @@
   <div class="rst-versions" role="note" aria-label="Versions">
   <span class="rst-current-version" data-toggle="rst-current-version">
     
-    
-      <span><a href="../statemachines/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
   </span>
