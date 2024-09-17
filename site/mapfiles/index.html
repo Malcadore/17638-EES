@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Toolchain - map files - 17638 Engineering Embedded Systems</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Toolchain - map files";
+        var mkdocs_page_input_path = "mapfiles.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> 17638 Engineering Embedded Systems
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../coursehardware/">Course Hardware</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../objdump/">Toolchain - objdump</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Toolchain - map files</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#basic-functionality">Basic Functionality</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#source-listing">Source Listing</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#map-file-listing-for-example-snippet">Map File Listing for Example Snippet</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../syllabus/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">17638 Engineering Embedded Systems</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Toolchain - map files</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="arm-toolchain-map-files">Arm Toolchain: Map Files</h1>
+<h2 id="basic-functionality">Basic Functionality</h2>
+<p>Map files are created by a directive to the linker.</p>
+<pre><code>arm-none-eabi-ld main.o -T linker.ld --cref -Map main.map -o main.elf
+</code></pre>
+<p>The output of the linking process is a Map file.  The notable elements in the map file are starting addresses, lengths of variables and sections, and symbols exported for startup code.</p>
+<p>Below you can see the variables from the main.c file (global_constant =&gt; .rodata) and (global_variable =&gt; .bss) their addresses and lengths.</p>
+<h3 id="source-listing">Source Listing</h3>
+<pre><code class="language-C">#include&lt;stdint.h&gt;
+
+const uint32_t global_constant = 3;
+
+uint32_t global_variable = 0;
+
+int main(void)
+{
+    uint32_t result = 0;
+    global_variable = 10;
+    for(uint32_t i = 0; i&lt;global_constant; i++)
+    {
+        global_variable += global_variable;
+    }
+    result = global_variable;
+    return result;
+}
+</code></pre>
+<h2 id="map-file-listing-for-example-snippet">Map File Listing for Example Snippet</h2>
+<pre><code>
+Linker script and memory map
+
+LOAD main.o
+                0x10002000        _stack_start = (ORIGIN (CCRAM) + LENGTH (CCRAM))
+
+.text           0x08000000        0x48
+ *(.isr_vector)
+ *(.text)
+ .text          0x08000000        0x44 main.o
+                0x08000000        main
+ *(.rodata)
+ .rodata        0x08000044        0x4 main.o
+                0x08000044        global_constant
+                0x08000048        . = ALIGN (0x4)
+                0x08000048        _end_text = .
+                0x08000048        _la_data = LOADADDR (.data)
+
+.glue_7         0x08000048        0x0
+ .glue_7        0x08000048        0x0 linker stubs
+
+.glue_7t        0x08000048        0x0
+ .glue_7t       0x08000048        0x0 linker stubs
+
+.vfp11_veneer   0x08000048        0x0
+ .vfp11_veneer  0x08000048        0x0 linker stubs
+
+.v4_bx          0x08000048        0x0
+ .v4_bx         0x08000048        0x0 linker stubs
+
+.iplt           0x08000048        0x0
+ .iplt          0x08000048        0x0 main.o
+
+.rel.dyn        0x08000048        0x0
+ .rel.iplt      0x08000048        0x0 main.o
+
+.data           0x20000000        0x0 load address 0x08000048
+                0x20000000        _start_data = .
+ *(.data)
+ .data          0x20000000        0x0 main.o
+                0x20000000        _end_data = .
+                0x20000000        . = ALIGN (0x4)
+
+.igot.plt       0x20000000        0x0 load address 0x08000048
+ .igot.plt      0x20000000        0x0 main.o
+
+.bss            0x20000000        0x4 load address 0x08000048
+                0x20000000        _start_bss = .
+ *(.bss)
+ .bss           0x20000000        0x4 main.o
+                0x20000000        global_variable
+                0x20000004        . = ALIGN (0x4)
+                0x20000004        _end_bss = .
+OUTPUT(main.elf elf32-littlearm)
+LOAD linker stubs
+
+.debug_info     0x00000000       0xe9
+ .debug_info    0x00000000       0xe9 main.o
+
+.debug_abbrev   0x00000000       0x9a
+ .debug_abbrev  0x00000000       0x9a main.o
+
+.debug_aranges  0x00000000       0x20
+ .debug_aranges
+                0x00000000       0x20 main.o
+
+.debug_line     0x00000000       0x165
+ .debug_line    0x00000000       0x165 main.o
+
+.debug_str      0x00000000       0x10e
+ .debug_str     0x00000000       0x10e main.o
+                                 0x14b (size before relaxing)
+
+.comment        0x00000000       0x45
+ .comment       0x00000000       0x45 main.o
+                                 0x46 (size before relaxing)
+
+.ARM.attributes
+                0x00000000       0x2e
+ .ARM.attributes
+                0x00000000       0x2e main.o
+
+.debug_frame    0x00000000       0x38
+ .debug_frame   0x00000000       0x38 main.o
+
+Cross Reference Table
+
+Symbol                           File
+global_constant                  main.o
+global_variable                  main.o
+main                             main.o
+
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../objdump/" class="btn btn-neutral float-left" title="Toolchain - objdump"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../syllabus/" class="btn btn-neutral float-right" title="About">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../objdump/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../syllabus/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

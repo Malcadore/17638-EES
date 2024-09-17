@@ -11,7 +11,12 @@ The output of the linking process is a Map file.  The notable elements in the ma
 
 Below you can see the variables from the main.c file (global_constant => .rodata) and (global_variable => .bss) their addresses and lengths.
 
-### Source Listing
+## Use Case
+
+Locate the addresses for code and verify the section that code is allocated to.
+For example, the vector table must be located at a specific address, the variable holding the table can be located in the map file.  From there, it will be known if the memory for the vector table must be relocated.
+
+## Source Listing
 ``` C
 #include<stdint.h>
 

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Toolchain - objdump - 17638 Engineering Embedded Systems</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Toolchain - objdump";
+        var mkdocs_page_input_path = "objdump.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> 17638 Engineering Embedded Systems
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../coursehardware/">Course Hardware</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Toolchain - objdump</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#basic-functionality">Basic Functionality</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#use-case">Use Case</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#example">Example</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#source-listing">Source Listing</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#file-header">File Header</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#section-header">Section Header</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#symbol-table">Symbol Table</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#disassembly">Disassembly</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#full-contents">Full Contents</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#intermixed">Intermixed</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../mapfiles/">Toolchain - map files</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../syllabus/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">17638 Engineering Embedded Systems</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Toolchain - objdump</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="arm-toolchain-arm-none-eabi-objdump">Arm Toolchain: arm-none-eabi-objdump</h1>
+<h2 id="basic-functionality">Basic Functionality</h2>
+<ul>
+<li>
+<p>arm-none-eabi-objdump displays information about object files created during the compilation process</p>
+</li>
+<li>
+<p>File Headers</p>
+</li>
+<li>Section Headers</li>
+<li>Symbol Tables</li>
+<li>Disassembly</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<ul>
+<li>running <code>arm-none-eabi-objdump</code> will print out all the options that the tool can take as arguments and parameters.</li>
+</ul>
+<h2 id="use-case">Use Case</h2>
+<ul>
+<li>
+<p>examining the assembly for optimization</p>
+</li>
+<li>
+<p>understanding what the compiler has generated
+This can be useful when setting the compiler to optimize code, as the optimizer can take some liberties.  It doesn't understand what the programmer has intended and only follows some rules.  As a consequence some insidious defects can appear that can manifest as timing errors, incorrect behavior, or a program that doesn't work at all.</p>
+</li>
+</ul>
+<h2 id="example">Example</h2>
+<h3 id="source-listing">Source Listing</h3>
+<pre><code class="language-C">#include&lt;stdint.h&gt;
+
+const uint32_t global_constant = 3;
+
+uint32_t global_variable = 0;
+
+int main(void)
+{
+    uint32_t result = 0;
+    global_variable = 10;
+    for(uint32_t i = 0; i&lt;global_constant; i++)
+    {
+        global_variable += global_variable;
+    }
+    result = global_variable;
+    return result;
+}
+</code></pre>
+<h3 id="file-header">File Header</h3>
+<pre><code>arm-none-eabi-objdump -f main.o
+</code></pre>
+<p>This command outputs basic information about the object file.  It's useful to initially understand what kind of file the object file is.  It also has utility in the security domain for identifying the type of file from the header information and what some basic attributes are.</p>
+<pre><code>main.o:     file format elf32-littlearm
+architecture: armv7e-m, flags 0x00000011:
+HAS_RELOC, HAS_SYMS
+start address 0x00000000
+</code></pre>
+<h3 id="section-header">Section Header</h3>
+<pre><code>arm-none-eabi-objdump -h main.o
+</code></pre>
+<p>With the command listed above, we're listing out the section headers for the object file compiled from the example code listing.</p>
+<p>Each of the sections listed in the output are relocable in the linker file and should be assembled correctly for the arm binary to work in the STM32F3.  The sections of interest for this object file are .text, .data, .bss, and .rodata.  The compiler will create sections as it needs, so referring to the compiler documentation may be needed to interpret the output well enough to perform any relocations.</p>
+<pre><code>scott@raven:$ arm-none-eabi-objdump -h main.o
+
+main.o:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000044  00000000  00000000  00000034  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  1 .data         00000000  00000000  00000000  00000078  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000004  00000000  00000000  00000078  2**2
+                  ALLOC
+  3 .rodata       00000004  00000000  00000000  00000078  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  4 .debug_info   000000e9  00000000  00000000  0000007c  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  5 .debug_abbrev 0000009a  00000000  00000000  00000165  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  6 .debug_aranges 00000020  00000000  00000000  000001ff  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  7 .debug_line   00000167  00000000  00000000  0000021f  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  8 .debug_str    0000014b  00000000  00000000  00000386  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  9 .comment      00000046  00000000  00000000  000004d1  2**0
+                  CONTENTS, READONLY
+ 10 .debug_frame  00000038  00000000  00000000  00000518  2**2
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 11 .ARM.attributes 0000002e  00000000  00000000  00000550  2**0
+                  CONTENTS, READONLY
+</code></pre>
+<h3 id="symbol-table">Symbol Table</h3>
+<pre><code>arm-none-eabi-objdump -t main.o
+</code></pre>
+<p>The output codes are fairly cryptic and more than what should be included in this page.  Refer to <code>man arm-none-eabi-objdump</code> for details on what each column means and how to decode the values in each.  That said, we can see where the variables from the sample listing have been allocated to.  The names of interest are <code>global_constant</code>, <code>global_variable</code>, and <code>main</code>.</p>
+<pre><code>main.o:     file format elf32-littlearm
+
+SYMBOL TABLE:
+00000000 l    df *ABS*  00000000 main.c
+00000000 l    d  .text  00000000 .text
+00000000 l    d  .data  00000000 .data
+00000000 l    d  .bss   00000000 .bss
+00000000 l    d  .rodata    00000000 .rodata
+00000000 l    d  .debug_info    00000000 .debug_info
+00000000 l    d  .debug_abbrev  00000000 .debug_abbrev
+00000000 l    d  .debug_aranges 00000000 .debug_aranges
+00000000 l    d  .debug_line    00000000 .debug_line
+00000000 l    d  .debug_str 00000000 .debug_str
+00000000 l    d  .debug_frame   00000000 .debug_frame
+00000000 l    d  .comment   00000000 .comment
+00000000 l    d  .ARM.attributes    00000000 .ARM.attributes
+00000000 g     O .rodata    00000004 global_constant
+00000000 g     O .bss   00000004 global_variable
+00000000 g     F .text  00000044 main
+</code></pre>
+<h3 id="disassembly">Disassembly</h3>
+<pre><code>arm-none-eabi-objdump -D main.o
+</code></pre>
+<p>This is a partial listing of the command as the -D option prints out the disassembly for all sections.  Use the -d option to disassemble the executable sections, and remember that the executable code is typically placed in the .text section.</p>
+<pre><code>main.o:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00000000 &lt;main&gt;:
+   0:   b480        push    {r7}
+   2:   b083        sub sp, #12
+   4:   af00        add r7, sp, #0
+   6:   2300        movs    r3, #0
+   8:   603b        str r3, [r7, #0]
+   a:   4b0d        ldr r3, [pc, #52]   @ (40 &lt;main+0x40&gt;)
+   c:   220a        movs    r2, #10
+   e:   601a        str r2, [r3, #0]
+  10:   2300        movs    r3, #0
+  12:   607b        str r3, [r7, #4]
+  14:   e007        b.n 26 &lt;main+0x26&gt;
+  16:   4b0a        ldr r3, [pc, #40]   @ (40 &lt;main+0x40&gt;)
+  18:   681b        ldr r3, [r3, #0]
+  1a:   005b        lsls    r3, r3, #1
+  1c:   4a08        ldr r2, [pc, #32]   @ (40 &lt;main+0x40&gt;)
+  1e:   6013        str r3, [r2, #0]
+  20:   687b        ldr r3, [r7, #4]
+  22:   3301        adds    r3, #1
+  24:   607b        str r3, [r7, #4]
+  26:   2203        movs    r2, #3
+  28:   687b        ldr r3, [r7, #4]
+  2a:   4293        cmp r3, r2
+  2c:   d3f3        bcc.n   16 &lt;main+0x16&gt;
+  2e:   4b04        ldr r3, [pc, #16]   @ (40 &lt;main+0x40&gt;)
+  30:   681b        ldr r3, [r3, #0]
+  32:   603b        str r3, [r7, #0]
+  34:   683b        ldr r3, [r7, #0]
+  36:   4618        mov r0, r3
+  38:   370c        adds    r7, #12
+  3a:   46bd        mov sp, r7
+  3c:   bc80        pop {r7}
+  3e:   4770        bx  lr
+  40:   00000000    andeq   r0, r0, r0
+
+Disassembly of section .rodata:
+
+00000000 &lt;global_constant&gt;:
+   0:   00000003    andeq   r0, r0, r3
+
+</code></pre>
+<h3 id="full-contents">Full Contents</h3>
+<pre><code>arm-none-eabi-objdump -s main.o
+</code></pre>
+<p>This command dumps the full contents of the object file and includes each part of the assembly as hexcodes within the sections they're allocated to.  This is useful as a cursory examination of any strings that are embedded in the object file, and to see what instructions are within each section created by the compiler.</p>
+<pre><code>scott@raven:~/Desktop/17638/disassembly_tools$ arm-none-eabi-objdump -s main.o
+
+main.o:     file format elf32-littlearm
+
+Contents of section .text:
+ 0000 80b483b0 00af0023 3b600d4b 0a221a60  .......#;`.K.&quot;.`
+ 0010 00237b60 07e00a4b 1b685b00 084a1360  .#{`...K.h[..J.`
+ 0020 7b680133 7b600322 7b689342 f3d3044b  {h.3{`.&quot;{h.B...K
+ 0030 1b683b60 3b681846 0c37bd46 80bc7047  .h;`;h.F.7.F..pG
+ 0040 00000000                             ....            
+Contents of section .rodata:
+ 0000 03000000                             ....            
+Contents of section .debug_info:
+ 0000 e5000000 05000104 00000000 04330000  .............3..
+ 0010 001df000 0000f700 00000000 00004400  ..............D.
+ 0020 00000000 00000101 063f0100 00010108  .........?......
+ 0030 00000000 01020523 01000001 02072000  .......#...... .
+ 0040 00000104 05360100 00029700 0000024f  .....6.........O
+ 0050 19550000 00010407 0e000000 010805d2  .U..............
+ 0060 00000001 0807b400 00000504 05696e74  .............int
+ 0070 00010407 a7000000 022d0100 00033014  .........-....0.
+ 0080 49000000 06780000 00038700 00000410  I....x..........
+ 0090 84000000 05030000 000003e0 00000006  ................
+ 00a0 0a780000 00050300 00000007 a2000000  .x..............
+ 00b0 0109056a 00000000 00000044 00000001  ...j.......D....
+ 00c0 9c08cb00 0000010b 0e780000 00029170  .........x.....p
+ 00d0 09100000 001e0000 000a6900 010d1278  ..........i....x
+ 00e0 00000002 91740000 00                 .....t...       
+Contents of section .debug_abbrev:
+ 0000 0124000b 0b3e0b03 0e000002 1600030e  .$...&gt;..........
+ 0010 3a0b3b0b 390b4913 00000334 00030e3a  :.;.9.I....4...:
+ 0020 21013b0b 390b4913 3f190218 00000411  !.;.9.I.?.......
+ 0030 01250e13 0b030e1b 0e110112 06101700  .%..............
+ 0040 00052400 0b0b3e0b 03080000 06260049  ..$...&gt;......&amp;.I
+ 0050 13000007 2e013f19 030e3a0b 3b0b390b  ......?...:.;.9.
+ 0060 27194913 11011206 40187a19 00000834  '.I.....@.z....4
+ 0070 00030e3a 0b3b0b39 0b491302 18000009  ...:.;.9.I......
+ 0080 0b011101 12060000 0a340003 083a0b3b  .........4...:.;
+ 0090 0b390b49 13021800 0000               .9.I......      
+Contents of section .debug_aranges:
+ 0000 1c000000 02000000 00000400 00000000  ................
+ 0010 00000000 44000000 00000000 00000000  ....D...........
+Contents of section .debug_line:
+ 0000 63010000 03002801 00000201 fb0e0d00  c.....(.........
+ 0010 01010101 00000001 0000012f 686f6d65  .........../home
+ 0020 2f73636f 74742f44 65736b74 6f702f31  /scott/Desktop/1
+ 0030 37363338 2f41524d 5f546f6f 6c636861  7638/ARM_Toolcha
+ 0040 696e2f61 726d2d67 6e752d74 6f6f6c63  in/arm-gnu-toolc
+ 0050 6861696e 2d31332e 332e7265 6c312d78  hain-13.3.rel1-x
+ 0060 38365f36 342d6172 6d2d6e6f 6e652d65  86_64-arm-none-e
+ 0070 6162692f 61726d2d 6e6f6e65 2d656162  abi/arm-none-eab
+ 0080 692f696e 636c7564 652f6d61 6368696e  i/include/machin
+ 0090 65002f68 6f6d652f 73636f74 742f4465  e./home/scott/De
+ 00a0 736b746f 702f3137 3633382f 41524d5f  sktop/17638/ARM_
+ 00b0 546f6f6c 63686169 6e2f6172 6d2d676e  Toolchain/arm-gn
+ 00c0 752d746f 6f6c6368 61696e2d 31332e33  u-toolchain-13.3
+ 00d0 2e72656c 312d7838 365f3634 2d61726d  .rel1-x86_64-arm
+ 00e0 2d6e6f6e 652d6561 62692f61 726d2d6e  -none-eabi/arm-n
+ 00f0 6f6e652d 65616269 2f696e63 6c756465  one-eabi/include
+ 0100 2f737973 00006d61 696e2e63 00000000  /sys..main.c....
+ 0110 5f646566 61756c74 5f747970 65732e68  _default_types.h
+ 0120 00010000 5f737464 696e742e 68000200  ...._stdint.h...
+ 0130 00000501 00050200 00000003 0901050e  ................
+ 0140 3d05152f 05123d05 052e0516 22052d00  =../..=.....&quot;.-.
+ 0150 02040356 051a0002 04013c05 0c4e3d05  ...V......&lt;..N=.
+ 0160 01210207 000101                      .!.....         
+Contents of section .debug_str:
+ 0000 756e7369 676e6564 20636861 72006c6f  unsigned char.lo
+ 0010 6e672075 6e736967 6e656420 696e7400  ng unsigned int.
+ 0020 73686f72 7420756e 7369676e 65642069  short unsigned i
+ 0030 6e740047 4e552043 31372031 332e332e  nt.GNU C17 13.3.
+ 0040 31203230 32343036 3134202d 6d637075  1 20240614 -mcpu
+ 0050 3d636f72 7465782d 6d34202d 6d746875  =cortex-m4 -mthu
+ 0060 6d62202d 6d666c6f 61742d61 62693d73  mb -mfloat-abi=s
+ 0070 6f667420 2d6d6172 63683d61 726d7637  oft -march=armv7
+ 0080 652d6d20 2d670067 6c6f6261 6c5f636f  e-m -g.global_co
+ 0090 6e737461 6e74005f 5f75696e 7433325f  nstant.__uint32_
+ 00a0 74006d61 696e0075 6e736967 6e656420  t.main.unsigned 
+ 00b0 696e7400 6c6f6e67 206c6f6e 6720756e  int.long long un
+ 00c0 7369676e 65642069 6e740072 6573756c  signed int.resul
+ 00d0 74006c6f 6e67206c 6f6e6720 696e7400  t.long long int.
+ 00e0 676c6f62 616c5f76 61726961 626c6500  global_variable.
+ 00f0 6d61696e 2e63002f 686f6d65 2f73636f  main.c./home/sco
+ 0100 74742f44 65736b74 6f702f31 37363338  tt/Desktop/17638
+ 0110 2f646973 61737365 6d626c79 5f746f6f  /disassembly_too
+ 0120 6c730073 686f7274 20696e74 0075696e  ls.short int.uin
+ 0130 7433325f 74006c6f 6e672069 6e740073  t32_t.long int.s
+ 0140 69676e65 64206368 617200             igned char.     
+Contents of section .comment:
+ 0000 00474343 3a202841 726d2047 4e552054  .GCC: (Arm GNU T
+ 0010 6f6f6c63 6861696e 2031332e 332e5265  oolchain 13.3.Re
+ 0020 6c312028 4275696c 64206172 6d2d3133  l1 (Build arm-13
+ 0030 2e323429 29203133 2e332e31 20323032  .24)) 13.3.1 202
+ 0040 34303631 3400                        40614.          
+Contents of section .debug_frame:
+ 0000 0c000000 ffffffff 0100027c 0e0c0d00  ...........|....
+ 0010 24000000 00000000 00000000 44000000  $...........D...
+ 0020 410e0487 01410e10 410d075a 0e04410d  A....A..A..Z..A.
+ 0030 0d41c70e 00000000                    .A......        
+Contents of section .ARM.attributes:
+ 0000 412d0000 00616561 62690001 23000000  A-...aeabi..#...
+ 0010 0537452d 4d00060d 074d0902 12041401  .7E-M....M......
+ 0020 15011703 18011901 1a011e06 2201      ............&quot;.  
+</code></pre>
+<h3 id="intermixed">Intermixed</h3>
+<pre><code>arm-none-eabi-objdump -S main.o
+</code></pre>
+<p>Getting intermixed output 'intermixes' the assembly with the source code so it is easier for the humans to follow along.  This is useful in determining what the compiler is creating, line by line.</p>
+<pre><code>main.o:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00000000 &lt;main&gt;:
+arm-none-eabi-objdump: Warning: source file /home/scott/Desktop/17638/disassembly_tools/main.c is more recent than object file
+uint32_t global_variable = 0;
+
+int main(void)
+{
+    uint32_t result = 0;
+    global_variable = 10;
+   0:   b480        push    {r7}
+   2:   b083        sub sp, #12
+   4:   af00        add r7, sp, #0
+    for(uint32_t i = 0; i&lt;global_constant; i++)
+   6:   2300        movs    r3, #0
+   8:   603b        str r3, [r7, #0]
+    {
+   a:   4b0d        ldr r3, [pc, #52]   @ (40 &lt;main+0x40&gt;)
+   c:   220a        movs    r2, #10
+   e:   601a        str r2, [r3, #0]
+        global_variable += global_variable;
+  10:   2300        movs    r3, #0
+  12:   607b        str r3, [r7, #4]
+  14:   e007        b.n 26 &lt;main+0x26&gt;
+    }
+    result = global_variable;
+  16:   4b0a        ldr r3, [pc, #40]   @ (40 &lt;main+0x40&gt;)
+  18:   681b        ldr r3, [r3, #0]
+  1a:   005b        lsls    r3, r3, #1
+  1c:   4a08        ldr r2, [pc, #32]   @ (40 &lt;main+0x40&gt;)
+  1e:   6013        str r3, [r2, #0]
+        global_variable += global_variable;
+  20:   687b        ldr r3, [r7, #4]
+  22:   3301        adds    r3, #1
+  24:   607b        str r3, [r7, #4]
+  26:   2203        movs    r2, #3
+  28:   687b        ldr r3, [r7, #4]
+  2a:   4293        cmp r3, r2
+  2c:   d3f3        bcc.n   16 &lt;main+0x16&gt;
+    return result;
+}
+  2e:   4b04        ldr r3, [pc, #16]   @ (40 &lt;main+0x40&gt;)
+  30:   681b        ldr r3, [r3, #0]
+  32:   603b        str r3, [r7, #0]
+  34:   683b        ldr r3, [r7, #0]
+  36:   4618        mov r0, r3
+  38:   370c        adds    r7, #12
+  3a:   46bd        mov sp, r7
+  3c:   bc80        pop {r7}
+  3e:   4770        bx  lr
+  40:   00000000    .word   0x00000000
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../coursehardware/" class="btn btn-neutral float-left" title="Course Hardware"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../mapfiles/" class="btn btn-neutral float-right" title="Toolchain - map files">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../coursehardware/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../mapfiles/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

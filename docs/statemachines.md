@@ -1,3 +1,5 @@
+# Design Element: State Machines
+
 
 Relevant Links
 - required literature reading
@@ -30,9 +32,24 @@ Relevant Links
 ## Example for State Machine Implementations
 
 ## Implementing State Machines
-- Conditional Statements
+
+##  Conditional Statements
     - Code Snippet
+
     ```C
+        // Define states
+    typedef enum {
+        STATE_IDLE,
+        STATE_RUNNING,
+    } State;
+
+    typedef enum {
+        EVENT_START,
+        EVENT_STOP
+    } Event
+    
+    event = getEvent();
+
     switch (currentState) {
     case STATE_IDLE:
         if (event == EVENT_START) {
@@ -50,13 +67,20 @@ Relevant Links
     }
 
     ```
+
     - Discussion
-    - Pros/Cons
+    Conditional state machines are the simplest to implement and maintain.  There are no fancy tricks with referncing or structs that need to be coded.  The switch/case block is typically located in a processing loop and executed frequently.  Placing code that queries external conditions can be a matter of taste, being either inside the control loop, the switch case block, or elsewhere, but the point to note is that collecting variables or querying an RT Image is going to be a design concern.  For relatively small state machines, the switch is very maintainable, but when lots of states or transition events have to be designed, then it becomes problematic to update.  This is due to being constrained to one block of code or relocating case code into functions.  Care has to be taken refactoring switch case statements to avoid maintenaince problems.
+
+    - Pros
+        - Simple, with no pointers, easy to maintain when small
+
+    - Cons
+        - Quickly becomes a maintenaince problem with lots of states 
 
 
-- Lookup Tables
-    - Code Snippet
-    - TODO: Modify example
+## Lookup Tables
+
+
     ```C
     #include <stdio.h>
 
@@ -137,35 +161,19 @@ Relevant Links
         Event Handling: The handleEvent function iterates through the state transition table to find the matching state and event, performs the action, and updates the current state.
         Main Function: Simulates timer events to demonstrate the state transitions.
 
-    - Discussion
-    - Pros/Cons
+    - Pros
+        - State transition table is easily defined
+        - Functions are mapped to actions that take place on transitions
+    
+    - Cons
+        - Event Handling loop must iterate over the entire state space
+        - Handling non-deterministic FSM's in a generic way complicates the example.  
+        - Handling more than one event or more than one possible transition makes it also more complicated.
 
 
 - State Pattern
 
-    - Code Snippet
     ```C
-    typedef struct State {
-        void (*enter)(void);
-        void (*execute)(void);
-        void (*exit)(void);
-    } State;
-
-    State idleState = {idleEnter, idleExecute, idleExit};
-    State runningState = {runningEnter, runningExecute, runningExit};
-
-    State* currentState = &idleState;
-
-    void changeState(State* newState) {
-        currentState->exit();
-        currentState = newState;
-        currentState->enter();
-    }
-
-    void update() {
-        currentState->execute();
-    }
-
     #include <stdio.h>
 
     // Forward declarations of state structures
@@ -272,7 +280,13 @@ Relevant Links
         State Machine Update: The updateStateMachine function calls the execute function of the current state.
         Main Function: Initializes the state machine and simulates state machine updates.
 
-    - Discussion
+    - Pros
+        - Easier to manage state actions
+        - More modular than conditional state machine implementations
+        - Transitions defined inside states gets around lookup table limitations
+
+    - Cons
+        - Use of pointers can be prohibited by safety standards
 
 ## Discussion of Types
 
@@ -282,52 +296,3 @@ Relevant Links
 https://www.youtube.com/watch?v=NTEHRjiAY2I
 
 
-
-## Lecture Outline: State Machines
-
-1. Introduction (5 minutes)
-Definition: What is a state machine?
-Importance: Why are state machines crucial in software engineering?
-Applications: Real-world examples (e.g., vending machines, traffic lights, software protocols).
-
-2. Types of State Machines (5 minutes)
-Finite State Machines (FSM)
-Definition and characteristics
-Examples
-Deterministic vs. Non-Deterministic FSM
-Differences and use cases
-Mealy vs. Moore Machines
-Definitions and key differences
-Examples
-
-3. Components of a State Machine (5 minutes)
-States: Definition and examples
-Transitions: How states change
-Events/Inputs: Triggers for transitions
-Actions/Outputs: Responses to transitions
-
-4. Designing State Machines (10 minutes)
-State Diagrams: Visual representation
-Symbols and notation
-Example diagram
-State Tables: Tabular representation
-Structure and usage
-Example table
-Best Practices: Tips for designing effective state machines
-Simplifying complex systems
-Avoiding common pitfalls
-
-5. Case Study (5 minutes)
-Example Project: Walkthrough of a state machine in a software project
-Problem statement
-State diagram and table
-Implementation overview
-
-6. Q&A and Discussion (5 minutes)
-Open floor for questions
-Discussion on advanced topics or specific student interests
-
-7. Additional Tips:
-Interactive Elements: Include quick polls or questions to engage students.
-Visual Aids: Use diagrams and tables to illustrate concepts clearly.
-Real-World Examples: Relate theoretical concepts to practical applications.

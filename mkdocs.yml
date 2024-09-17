@@ -4,5 +4,6 @@ nav:
   - Course Hardware: coursehardware.md
   - Toolchain - objdump: objdump.md
   - Toolchain - map files: mapfiles.md
+  - State Machines: statemachines.md
   - About: syllabus.md
 theme: readthedocs
